@@ -17,3 +17,26 @@
 2026-03-06T09:51:25.034543Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/src/app/globals.css")}
 2026-03-06T09:51:25.034560Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@kodkong/web"), path: AnchoredSystemPathBuf("apps/web") }}))
 2026-03-06T09:51:25.058485Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2026-03-06T09:55:29.434068Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("vercel.json")}
+2026-03-06T09:55:29.434168Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2026-03-06T09:55:29.533939Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("vercel.json")}
+2026-03-06T09:55:29.533947Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2026-03-06T09:55:51.932844Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/api/package.json")}
+2026-03-06T09:55:51.932952Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@kodkong/api"), path: AnchoredSystemPathBuf("apps/api") }}))
+2026-03-06T09:56:04.632876Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("packages/database/package.json")}
+2026-03-06T09:56:04.632891Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@kodkong/database"), path: AnchoredSystemPathBuf("packages/database") }}))
+2026-03-06T09:56:17.834097Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/api/Dockerfile")}
+2026-03-06T09:56:17.834127Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@kodkong/api"), path: AnchoredSystemPathBuf("apps/api") }}))
+2026-03-06T09:56:22.932162Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf(".dockerignore")}
+2026-03-06T09:56:22.932170Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2026-03-06T09:56:32.133212Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/api/railway.toml")}
+2026-03-06T09:56:32.133232Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@kodkong/api"), path: AnchoredSystemPathBuf("apps/api") }}))
+2026-03-06T09:56:32.231711Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/api/railway.toml")}
+2026-03-06T09:56:32.231720Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@kodkong/api"), path: AnchoredSystemPathBuf("apps/api") }}))
+2026-03-06T09:56:32.231732Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2026-03-06T09:57:17.933523Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf(".env.example")}
+2026-03-06T09:57:17.933551Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2026-03-06T09:57:58.735026Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/api/package.json"), AnchoredSystemPathBuf(".dockerignore"), AnchoredSystemPathBuf("apps/api/railway.toml"), AnchoredSystemPathBuf("vercel.json"), AnchoredSystemPathBuf("apps/api/Dockerfile"), AnchoredSystemPathBuf("packages/database/package.json")}
+2026-03-06T09:57:58.735064Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@kodkong/api"), path: AnchoredSystemPathBuf("apps/api") }, WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }, WorkspacePackage { name: Other("@kodkong/database"), path: AnchoredSystemPathBuf("packages/database") }}))
+2026-03-06T09:57:58.798997Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2026-03-06T09:57:58.799009Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
