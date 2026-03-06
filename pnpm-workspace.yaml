@@ -1,0 +1,23 @@
+# ==============================================
+# pnpm Workspace Configuration
+# ==============================================
+# Defines which directories are part of the KodKong monorepo
+#
+# Learn more: https://pnpm.io/workspaces
+#
+# @see https://pnpm.io/pnpm-workspace_yaml
+# @author KodKong Team
+# @created 2026-03-05
+
+packages:
+  # Applications
+  # Contains frontend (Next.js) and backend (Express) applications
+  - 'apps/*'
+
+  # Shared packages
+  # Contains shared code used across applications
+  # - database: Prisma ORM and database client
+  # - shared: TypeScript types, validators, utilities
+  # - config: Shared configuration (ESLint, TypeScript, Prettier)
+  - 'packages/*'
+  - 'packages/config/*'

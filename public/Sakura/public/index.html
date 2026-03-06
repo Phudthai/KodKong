@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sakura - Mercari Scraper</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f8f0fc;
+      color: #4a3f5c;
+    }
+
+    header {
+      background: linear-gradient(135deg, #c9a0dc, #f4a7c3);
+      color: white;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 2px 12px rgba(180, 120, 200, 0.25);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .search-bar {
+      display: flex;
+      flex: 1;
+      max-width: 600px;
+      gap: 8px;
+    }
+
+    .search-bar input {
+      flex: 1;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 24px;
+      font-size: 14px;
+      outline: none;
+      background: rgba(255,255,255,0.9);
+      color: #4a3f5c;
+    }
+
+    .search-bar input::placeholder { color: #b89ec4; }
+
+    .search-bar button {
+      padding: 10px 20px;
+      background: white;
+      color: #b56fc4;
+      border: none;
+      border-radius: 24px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px;
+      transition: opacity 0.2s;
+    }
+
+    .search-bar button:hover { opacity: 0.85; }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 24px;
+      background: #fff6ff;
+      border-bottom: 1px solid #e8d4f0;
+      flex-wrap: wrap;
+    }
+
+    .source-badge {
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .source-badge.mercari_api { background: #e6f9f0; color: #2e7d60; }
+    .source-badge.mock { background: #fef3e2; color: #b06000; }
+    .source-badge.mock_fallback { background: #f3e6f9; color: #8a4aad; }
+
+    .mock-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      user-select: none;
+      color: #7a6090;
+    }
+
+    .mock-toggle input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      accent-color: #c9a0dc;
+    }
+
+    .total-count {
+      margin-left: auto;
+      font-size: 13px;
+      color: #a08ab8;
+    }
+
+    main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(180, 120, 210, 0.12);
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      border: 1px solid #f0e0f8;
+      animation: fadeSlideIn 0.25s ease both;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 18px rgba(180, 120, 210, 0.22);
+    }
+
+    .card-img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      background: #f9f0ff;
+      display: block;
+    }
+
+    .card-img-placeholder {
+      width: 100%;
+      aspect-ratio: 1;
+      background: linear-gradient(135deg, #f5eaff, #fde8f4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+    }
+
+    .card-body {
+      padding: 10px 12px 12px;
+    }
+
+    .card-name {
+      font-size: 13px;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 6px;
+      color: #4a3f5c;
+    }
+
+    .card-price {
+      font-size: 16px;
+      font-weight: 700;
+      color: #c060b0;
+    }
+
+    .card-price::before { content: '¥'; font-size: 12px; font-weight: 400; }
+
+    .card-condition {
+      font-size: 11px;
+      color: #b89ec4;
+      margin-top: 2px;
+    }
+
+    .skeleton-card {
+      pointer-events: none;
+      box-shadow: none;
+      transform: none;
+      background: #ffffff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .skeleton-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, rgba(255,255,255,0) 0%, rgba(245,240,255,0.9) 40%, rgba(255,255,255,0) 80%);
+      transform: translateX(-100%);
+      animation: cardShimmer 1.4s ease-in-out infinite;
+      mix-blend-mode: multiply;
+    }
+
+    .skeleton-body {
+      padding: 10px 12px 12px;
+    }
+
+    .skeleton-img {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 0;
+    }
+
+    .skeleton-line {
+      height: 10px;
+      border-radius: 999px;
+      margin-bottom: 6px;
+    }
+
+    .skeleton-line.short {
+      width: 60%;
+    }
+
+    .skeleton-shimmer {
+      background: linear-gradient(90deg, #f7f2ff 0%, #f0e6ff 50%, #f7f2ff 100%);
+      background-size: 200% 100%;
+      animation: shimmer 1.2s ease-in-out infinite;
+    }
+
+    .skeleton-fullpage {
+      min-height: calc(100vh - 180px);
+    }
+
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 80px;
+      gap: 12px;
+      font-size: 16px;
+      color: #a08ab8;
+    }
+
+    .spinner {
+      width: 28px;
+      height: 28px;
+      border: 3px solid #f0d8f8;
+      border-top-color: #c9a0dc;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    @keyframes cardShimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .error-msg {
+      background: #fdf0ff;
+      border: 1px solid #e8c8f4;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      color: #8a4aad;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 80px;
+      color: #b89ec4;
+      font-size: 16px;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      margin: 32px auto 0;
+    }
+
+    .page-btn {
+      padding: 10px 28px;
+      background: linear-gradient(135deg, #c9a0dc, #f4a7c3);
+      color: white;
+      border: none;
+      border-radius: 24px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      box-shadow: 0 3px 10px rgba(180, 120, 200, 0.3);
+    }
+
+    .page-btn:hover { opacity: 0.85; }
+    .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .auction-badge {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: rgba(192, 96, 176, 0.88);
+      color: white;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Sakura</h1>
+  <div class="search-bar">
+    <input id="searchInput" type="text" placeholder="Search items..." />
+    <button onclick="doSearch()">Search</button>
+  </div>
+</header>
+
+<div class="controls">
+  <label class="mock-toggle">
+    <input type="checkbox" id="mockToggle" />
+    Mock Data
+  </label>
+  <span id="sourceBadge" class="source-badge" style="display:none"></span>
+  <span id="totalCount" class="total-count"></span>
+</div>
+
+<main>
+  <div id="errorMsg" class="error-msg" style="display:none"></div>
+  <div id="content">
+    <div class="loading"><div class="spinner"></div> Loading...</div>
+  </div>
+  <div class="pagination" id="pagination" style="display:none">
+    <button id="prevBtn" class="page-btn" onclick="goPage('prev')" disabled>← Previous</button>
+    <button id="nextBtn" class="page-btn" onclick="goPage('next')" disabled>Next →</button>
+  </div>
+</main>
+
+<script>
+  let nextPageToken = null;
+  let previousPageToken = null;
+  let currentKeyword = '';
+  let isLoading = false;
+  let hasLoadedFirstItem = false;
+
+  // itemConditionId: "1"–"6" ตาม Mercari
+  const CONDITION_MAP = {
+    '1': 'Brand New',
+    '2': 'Like New',
+    '3': 'Good',
+    '4': 'Fair',
+    '5': 'Poor',
+    '6': 'For Parts',
+  };
+
+  const EMOJI_FALLBACKS = ['📦', '👕', '📱', '🎮', '👟', '📚', '🎵', '🏠', '🚗', '⌚'];
+
+  function getConditionLabel(condId) {
+    return CONDITION_MAP[condId] || condId || '';
+  }
+
+  function randomEmoji(id) {
+    const idx = id ? id.charCodeAt(id.length - 1) % EMOJI_FALLBACKS.length : 0;
+    return EMOJI_FALLBACKS[idx];
+  }
+
+  function formatPrice(price) {
+    return Number(price).toLocaleString('ja-JP');
+  }
+
+  function createSkeletonCard() {
+    const card = document.createElement('div');
+    card.className = 'card skeleton-card';
+    card.innerHTML = `
+      <div class="skeleton-img skeleton-shimmer"></div>
+      <div class="skeleton-body">
+        <div class="skeleton-line skeleton-shimmer"></div>
+        <div class="skeleton-line skeleton-shimmer"></div>
+        <div class="skeleton-line short skeleton-shimmer"></div>
+      </div>
+    `;
+    return card;
+  }
+
+  function showSkeletons(count = 32) {
+    const content = document.getElementById('content');
+    content.innerHTML = '<div class="grid skeleton-fullpage" id="grid" data-skeleton="true"></div>';
+    const grid = document.getElementById('grid');
+    for (let i = 0; i < count; i++) {
+      grid.appendChild(createSkeletonCard());
+    }
+  }
+
+  function clearSkeletons() {
+    const grid = document.getElementById('grid');
+    if (grid && grid.dataset.skeleton === 'true') {
+      grid.remove();
+    }
+  }
+
+  function buildCard(item, delay) {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.animationDelay = `${delay}ms`;
+
+    const thumb = item.thumbnails?.[0];
+    const emoji = randomEmoji(item.id);
+    const imgHtml = thumb
+      ? `<img class="card-img" src="${thumb}" alt="${item.name}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" /><div class="card-img-placeholder" style="display:none">${emoji}</div>`
+      : `<div class="card-img-placeholder">${emoji}</div>`;
+
+    const auctionBadge = item.auction
+      ? `<span class="auction-badge">Auction · ${Number(item.auction.totalBid).toLocaleString()} bids</span>`
+      : '';
+
+    card.innerHTML = `
+      <div style="position:relative">${imgHtml}${auctionBadge}</div>
+      <div class="card-body">
+        <div class="card-name">${item.name}</div>
+        <div class="card-price">${formatPrice(item.price)}</div>
+        <div class="card-condition">${getConditionLabel(item.itemConditionId)}</div>
+      </div>
+    `;
+    return card;
+  }
+
+  function updatePagination() {
+    const pagination = document.getElementById('pagination');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const hasPrev = !!previousPageToken;
+    const hasNext = !!nextPageToken;
+    pagination.style.display = (hasPrev || hasNext) ? 'flex' : 'none';
+    prevBtn.disabled = !hasPrev;
+    nextBtn.disabled = !hasNext;
+  }
+
+  let activeStream = null;
+
+  function fetchItems(keyword, pageToken = '') {
+    if (isLoading) return;
+    isLoading = true;
+    hasLoadedFirstItem = false;
+
+    // Close any existing stream
+    if (activeStream) { activeStream.close(); activeStream = null; }
+
+    const isMock = document.getElementById('mockToggle').checked;
+    const url = `/api/search/stream?keyword=${encodeURIComponent(keyword)}&page_token=${encodeURIComponent(pageToken)}&mock=${isMock}`;
+
+    showSkeletons();
+    document.getElementById('pagination').style.display = 'none';
+    document.getElementById('errorMsg').style.display = 'none';
+    document.getElementById('sourceBadge').style.display = 'none';
+    document.getElementById('totalCount').textContent = '';
+
+    const es = new EventSource(url);
+    activeStream = es;
+
+    es.addEventListener('meta', (e) => {
+      const meta = JSON.parse(e.data);
+      nextPageToken = meta.nextPageToken || null;
+      previousPageToken = meta.previousPageToken || null;
+
+      const badge = document.getElementById('sourceBadge');
+      badge.style.display = 'inline-block';
+      badge.className = `source-badge ${meta.source}`;
+      badge.textContent = meta.source === 'mercari_api' ? 'Live API' : meta.source === 'mock' ? 'Mock' : 'Mock (Fallback)';
+      document.getElementById('totalCount').textContent = `${Number(meta.total).toLocaleString()} items`;
+    });
+
+    es.addEventListener('item', (e) => {
+      const item = JSON.parse(e.data);
+      let grid = document.getElementById('grid');
+
+      if (!hasLoadedFirstItem) {
+        hasLoadedFirstItem = true;
+        if (grid && grid.dataset.skeleton === 'true') {
+          const content = document.getElementById('content');
+          content.innerHTML = '<div class="grid" id="grid"></div>';
+          grid = document.getElementById('grid');
+        }
+      }
+
+      if (grid) grid.appendChild(buildCard(item, 0));
+    });
+
+    es.addEventListener('done', () => {
+      es.close();
+      activeStream = null;
+      isLoading = false;
+
+      let grid = document.getElementById('grid');
+      if (grid && grid.dataset.skeleton === 'true') {
+        clearSkeletons();
+        grid = document.getElementById('grid');
+      }
+
+      if (!grid || grid.children.length === 0) {
+        document.getElementById('content').innerHTML = '<div class="empty">No items found</div>';
+      }
+
+      updatePagination();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    es.onerror = () => {
+      es.close();
+      activeStream = null;
+      isLoading = false;
+      clearSkeletons();
+      document.getElementById('content').innerHTML = '<div class="empty">Connection error</div>';
+    };
+  }
+
+  function doSearch() {
+    currentKeyword = document.getElementById('searchInput').value.trim();
+    fetchItems(currentKeyword);
+  }
+
+  function goPage(direction) {
+    const token = direction === 'next' ? nextPageToken : previousPageToken;
+    if (token) fetchItems(currentKeyword, token);
+  }
+
+  // Enter key search
+  document.getElementById('searchInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') doSearch();
+  });
+
+  // Mock toggle re-search
+  document.getElementById('mockToggle').addEventListener('change', () => {
+    fetchItems(currentKeyword, '');
+  });
+
+  // Initial load
+  fetchItems('');
+</script>
+
+</body>
+</html>
